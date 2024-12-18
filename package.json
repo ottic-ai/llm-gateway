@@ -1,0 +1,25 @@
+{
+  "name": "llm-gateway",
+  "version": "0.0.1",
+  "description": "LLM Gateway with direct request to provider",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/ottic-ai/llm-gateway"
+  },
+  "keywords": [
+    "llm",
+    "gateway",
+    "openai",
+    "anthropic"
+  ],
+  "author": "Dmitry Sergeev dmitry@ottic.ai",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.33.1",
+    "openai": "^4.77.0"
+  }
+}

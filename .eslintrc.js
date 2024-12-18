@@ -1,0 +1,52 @@
+module.exports = {
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        project: 'tsconfig.json',
+        tsconfigRootDir: __dirname,
+        sourceType: 'module',
+    },
+    plugins: ['@typescript-eslint/eslint-plugin', 'node', 'import'],
+    extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+    root: true,
+    env: {
+        node: true,
+        jest: true,
+    },
+
+    ignorePatterns: ['.eslintrc.js'],
+    rules: {
+        camelcase: ['warn', {properties: 'never'}],
+        curly: ['error', 'multi-line'],
+        eqeqeq: 'error',
+        'max-len': ['off'],
+        'no-console': 'warn',
+        'no-constant-condition': 'error',
+        'no-debugger': 'error',
+        'no-negated-condition': 'warn',
+        'no-throw-literal': 'error',
+        'prefer-const': 'warn',
+        'prefer-template': 'error',
+        'node/no-extraneous-require': 'error',
+        '@typescript-eslint/no-unused-vars': ['error', {argsIgnorePattern: '^_'}],
+        'prettier/prettier': ['error', {}, {usePrettierrc: true}],
+        'import/newline-after-import': 'error',
+        'import/order': [
+            'error',
+            {
+                groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+                'newlines-between': 'always',
+                alphabetize: {
+                    order: 'asc',
+                    caseInsensitive: true,
+                },
+            },
+        ],
+        quotes: ['error', 'single', {avoidEscape: true}],
+        'no-trailing-spaces': ['error', {skipBlankLines: true}],
+        '@typescript-eslint/interface-name-prefix': 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-namespace': 'off',
+    },
+};

@@ -2,35 +2,44 @@
   "name": "llm-gateway",
   "version": "0.0.1",
   "description": "LLM Gateway with direct request to provider",
-  "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "github.com/ottic-ai/llm-gateway"
+    "debug": "node --inspect dist/index.js",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "llm",
     "gateway",
     "openai",
-    "anthropic"
+    "anthropic",
+    "azure"
   ],
-  "author": "Dmitry Sergeev dmitry@ottic.ai",
+  "engines": {
+    "node": ">=20.x.x"
+  },
+  "author": "Dmitry Sergeev <dmitry@ottic.ai>",
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.33.1",
     "openai": "^4.77.0",
-    "winston": "^3.11.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.5",
-    "typescript": "^5.3.3",
     "ts-node": "^10.9.2",
+    "winston": "^3.17.0"
+  },
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.17.10",
     "jest": "^29.7.0",
-    "@types/jest": "^29.5.11"
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
   }
 }

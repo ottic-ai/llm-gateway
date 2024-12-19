@@ -32,7 +32,7 @@ Here's a basic example of how to use the LLM Gateway library:
 import { LLMGateway, EnumLlmModelType } from 'llm-gateway';
 
 const llmGateway = new LLMGateway({
-    modelType: EnumLLMProvider.OPENAI, // or ANTHROPIC, AZUREOPENAI
+    provider: EnumLLMProvider.OPENAI, // or ANTHROPIC, AZUREOPENAI
     apiKey: 'your-api-key',
     endpoint: 'your-endpoint', // Optional for OpenAI
     deployment: 'your-deployment', // Optional for Azure
@@ -40,11 +40,11 @@ const llmGateway = new LLMGateway({
 });
 
 
-const response = await llmGateway.generateResponse(
+const response = await llmGateway.chatCompletion(
     messages: [
     { role: 'user', content: 'Hello, how are you?' }
 ],
-    model: 'text-davinci-003',
+    model: 'gpt-4o-mini',
     max_tokens: 100,
     temperature: 0.7,
     top_p: 0.9,
@@ -65,26 +65,24 @@ The LLM Gateway library supports configuring fallbacks to ensure that if one mod
 import {LLMGateway, EnumLLMProvider} from 'llm-gateway';
 const primaryOptions = {
     apiKey: 'primary-api-key',
-    modelType: EnumLLMProvider.OPENAI,
+    provider: EnumLLMProvider.OPENAI,
 };
 const fallbackOptions = {
     apiKey: 'fallback-api-key',
-    modelType: EnumLLMProvider.ANTHROPIC,
+    provider: EnumLLMProvider.ANTHROPIC,
     
 };
 const gateway = new LLMGateway(primaryOptions, {fallback:
     {
-        retries: 3,
-        timeout: 10000,
         model: 'claude-3-5-sonnet-latest',
         fallbackConfig: fallbackOptions,
     }
 });
 try {
-    return await gateway.generateResponse({
+    return await gateway.chatCompletion({
         model: 'gpt-4o-mini',
         messages: [{role: 'user', content: 'Hello, how are you?'}],
-        max_tokens: 100,
+        max_completion_tokens: 100,
         temperature: 0.7,
         top_p: 0.9,
     });

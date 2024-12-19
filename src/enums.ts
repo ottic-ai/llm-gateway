@@ -1,4 +1,3 @@
-
 export enum EnumLLMProvider {
     OPENAI = 'openai',
     AZUREOPENAI = 'azureopenai',

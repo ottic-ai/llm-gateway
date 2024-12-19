@@ -1,0 +1,27 @@
+# Source
+src/
+test/
+__tests__/
+
+# Config files
+tsconfig.json
+jest.config.js
+.eslintrc
+.prettierrc
+.vscode/
+.github/
+
+# Dev files
+*.log
+coverage/
+.env
+.env.*
+
+# Git files
+.git/
+.gitignore
+
+# IDE
+.idea/
+*.swp
+*.swo

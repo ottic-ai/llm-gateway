@@ -7,8 +7,20 @@ It simplifies integrations with multiple providers, offering fallbacks, caching,
 
 
 - **Minimize Downtime**: Automatic retries and fallbacks to secondary providers like Azure or Entropic.  
+- **Automatic input params convertion**: Automatically convert input params between OpenAI, Anthropic and Azure formats for fallbacks.
 - **Faster Responses**: Direct client-side requests for low latency.  
 - **Unified Control**: A single interface to manage requests across LLMs. 
+- **Unified Output**: Consistent output format across LLMs. 
+```{
+    openAI/AnthropicOutput:{...}
+    llmGatewayOutput: {
+        type: 'text' | 'tool_calls';
+        content?: string; - content for text output
+        tool_name?: string; - name of the tool for tool_calls
+        arguments?: string; - arguments for the tool.
+    }
+}
+```
 - **Easy Model Switching**: Change between OpenAI, Anthropic, and Azure models with a simple configuration change. 
 
 > Contribute, fork, or raise issues— so we can make it better together.

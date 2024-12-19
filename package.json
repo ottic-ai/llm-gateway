@@ -28,6 +28,10 @@
     "ts-node": "^10.9.2",
     "winston": "^3.17.0"
   },
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/ottic-ai/llm-gateway"
+},
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "files": [

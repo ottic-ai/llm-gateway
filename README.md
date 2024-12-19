@@ -18,7 +18,7 @@ It simplifies integrations with multiple providers, offering fallbacks, caching,
         content?: string; - content for text output
         tool_name?: string; - name of the tool for tool_calls
         arguments?: string; - arguments for the tool.
-    }
+    }[]
 }
 ```
 - **Easy Model Switching**: Change between OpenAI, Anthropic, and Azure models with a simple configuration change. 

@@ -2,8 +2,7 @@ import OpenAI, { AzureOpenAI } from 'openai';
 import { AssistantTool } from 'openai/resources/beta/assistants';
 import { AssistantToolChoiceOption } from 'openai/resources/beta/threads/threads';
 import { ChatCompletion, ChatCompletionChunk, ChatCompletionCreateParamsBase, ChatCompletionCreateParamsNonStreaming, ChatCompletionMessageParam, ChatCompletionTool, ChatCompletionToolChoiceOption } from 'openai/resources/chat/completions';
-import { EnumLLMProvider } from '../../enums';
-import { IChatCompletionParams, ILLGatewayParams, ILLMProvider, IOpenAIChatCompletion } from '../../types';
+import { EnumLLMProvider, IChatCompletionParams, ILLGatewayParams, ILLMProvider, IOpenAIChatCompletion } from '../../types';
 import { Stream } from 'openai/streaming';
 
 export class OpenAIGateway implements ILLMProvider {
@@ -38,16 +37,16 @@ export class OpenAIGateway implements ILLMProvider {
 
         const completion = response.choices[0];
         if (completion.finish_reason === 'tool_calls') {
-            response.llmGatewayOutput = {
+            response.llmGatewayOutput = [{
                 type: 'tool_calls',
                 tool_name: completion.message.tool_calls[0].function.name,
                 arguments: JSON.parse(completion.message.tool_calls[0].function.arguments),
-            };
+            }];
         } else {
-            response.llmGatewayOutput = {
+            response.llmGatewayOutput = [{
                 type: 'text',
                 content: completion.message.content,
-            };
+            }];
         }
         return response;
     }

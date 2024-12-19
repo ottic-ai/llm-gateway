@@ -1,8 +1,13 @@
 import { AssistantToolChoice, AssistantToolChoiceOption } from "openai/resources/beta/threads/threads";
-import { EnumLLMProvider } from "./enums";
 import { ContentBlockParam, Message, TextBlockParam, Tool, ToolChoice } from "@anthropic-ai/sdk/resources";
 import { AssistantTool } from "openai/resources/beta/assistants";
 import { ChatCompletion, ChatCompletionTool, ChatCompletionToolChoiceOption, ResponseFormatJSONObject, ResponseFormatJSONSchema, ResponseFormatText } from "openai/resources";
+
+export enum EnumLLMProvider {
+    OPENAI = 'openai',
+    AZUREOPENAI = 'azureopenai',
+    ANTHROPIC = 'anthropic',
+}
 
 export interface ClientOptions {
     apiKey: string;
@@ -66,7 +71,7 @@ export interface IOpenAIChatCompletion extends ChatCompletion {
         content?: string;
         tool_name?: string;
         arguments?: string;
-    }
+    }[]
 }
 
 export interface IAnthropicChatCompletion extends Message {
@@ -75,5 +80,5 @@ export interface IAnthropicChatCompletion extends Message {
         content?: string;
         tool_name?: string;
         arguments?: string | unknown;
-    }
+    }[]
 }

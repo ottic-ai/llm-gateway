@@ -1,5 +1,4 @@
-import { EnumLLMProvider } from '../enums';
-import { IChatCompletionParams, ILLMProvider } from '../types';
+import { EnumLLMProvider, IChatCompletionParams, ILLMProvider } from '../types';
 
 export class MockProvider implements ILLMProvider {
     name = EnumLLMProvider.OPENAI;

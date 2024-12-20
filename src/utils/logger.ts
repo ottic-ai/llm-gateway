@@ -1,13 +1,19 @@
 import * as winston from 'winston';
 const { createLogger, format, transports } = winston;
-const { combine, timestamp, errors, json, colorize, simple } = format;
+const { combine, timestamp, errors, json, colorize, simple, printf } = format;
 
 const logger = createLogger({
-    level: process.env.LOG_LEVEL || 'info',
+    level: process.env.LOG_LEVEL || 'debug',
     format: combine(
         timestamp(),
         errors({ stack: true }),
-        json()
+        printf(({ level, message, timestamp, ...metadata }) => {
+            let msg = `${timestamp} [${level}] ${message}`;
+            if (Object.keys(metadata).length > 0) {
+                msg += ` ${JSON.stringify(metadata)}`;
+            }
+            return msg;
+        })
     ),
     defaultMeta: { service: 'llm-gateway' },
     transports: [

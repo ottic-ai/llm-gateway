@@ -1,7 +1,6 @@
 import { LLMGateway } from '../index';
-import { EnumLLMProvider } from '../enums';
 import { MockProvider } from '../__mocks__/mockProvider';
-import { IChatCompletionParams, ILLGatewayParams, LLMGatewayConfig } from '../types';
+import { EnumLLMProvider, IChatCompletionParams, ILLGatewayParams, ILLMGatewayConfig, } from '../types';
 import { ChatCompletionTool, ChatCompletionToolChoiceOption } from 'openai/resources/index.mjs';
 
 // Mock the logger to prevent actual logging during tests
@@ -24,7 +23,7 @@ describe('LLMGateway', () => {
             provider: EnumLLMProvider.OPENAI
         };
 
-        const config: LLMGatewayConfig = {
+        const config: ILLMGatewayConfig = {
             retries: 2,
             timeout: 1000,
             fallbacks: {
@@ -51,7 +50,6 @@ describe('LLMGateway', () => {
         metadata: {},
         temperature: 0.7,
         top_p: 1,
-        stream: false,
         tools: [{
             type: "function",
             function: {
@@ -79,7 +77,6 @@ describe('LLMGateway', () => {
         const gateway = createMockGateway();
         const stream = await gateway.chatCompletionStream({
             ...mockParams,
-            stream: true
         });
 
         const chunks: Array<{

@@ -1,6 +1,5 @@
 import { AzureOpenAI } from 'openai';
-import { EnumLLMProvider } from '../../enums';
-import { IChatCompletionParams, ILLGatewayParams, ILLMProvider } from '../../types';
+import { EnumLLMProvider, ILLGatewayParams, ILLMProvider } from '../../types';
 import { OpenAIGateway } from '../openai';
 
 export class AzureGateway extends OpenAIGateway implements ILLMProvider {

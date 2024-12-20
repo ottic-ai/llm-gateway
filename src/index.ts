@@ -1,4 +1,4 @@
-import { EnumLLMProvider } from "./enums";
+import { EnumLLMProvider } from "./types";
 import { AnthropicGateway } from "./providers/anthropic";
 import { AzureGateway } from "./providers/azure";
 import { OpenAIGateway } from "./providers/openai";
@@ -10,6 +10,7 @@ import {
     isAnthropicFormat, 
     isOpenAIFormat 
 } from './utils/paramConverters';
+import * as crypto from 'crypto';
 
 export class LLMGateway {
     private provider: ILLMProvider;
@@ -42,51 +43,80 @@ export class LLMGateway {
         }
     }
 
+    private async retryWithBackoff<T>(
+        operation: () => Promise<T>,
+        params: IChatCompletionParams,
+        maxRetries: number = this.config.retries || 0
+    ): Promise<T> {
+        let attempts = 0;
+        
+        while (true) {
+            const requestId = crypto.randomUUID();
+            try {
+                logDebug('Starting operation attempt', { 
+                    requestId,
+                    attempt: attempts + 1, 
+                    model: params.model 
+                });
+                
+                const response = await operation();
+                
+                logInfo('Operation successful', { 
+                    requestId,
+                    model: params.model,
+                    attempts: attempts + 1
+                });
+                
+                return response;
+            } catch (error) {
+                attempts++;
+                const remainingRetries = maxRetries - attempts;
+                
+                logError('Operation failed', error as Error, {
+                    requestId,
+                    attempt: attempts,
+                    remainingRetries
+                });
+                
+                if (attempts > maxRetries || !this.shouldRetry(error)) {
+                    throw error;
+                }
+                
+                const delayMs = this.calculateBackoff(attempts);
+                logDebug('Retrying after delay', { 
+                    requestId,
+                    delayMs,
+                    attempt: attempts + 1
+                });
+                
+                await this.delay(delayMs);
+            }
+        }
+    }
+    
+    private shouldRetry(error: any): boolean {
+        // Retry on rate limits or temporary network issues
+        if (error.status === 429 || error.status === 503) return true;
+        if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') return true;
+        return false;
+    }
+    
+    private calculateBackoff(attempt: number): number {
+        const base = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
+        const jitter = Math.random() * 1000;
+        return Math.floor(base + jitter);
+    }
+    
+    private delay(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async chatCompletion(params: IChatCompletionParams) {
         try {
-            let response;
-            let attempts = 0;
-            const maxRetries = this.config.retries || 0;
-            
-            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-            
-            while(attempts <= maxRetries) {
-                try {
-                    logDebug('Attempting chat completion', { 
-                        attempt: attempts + 1, 
-                        model: params.model 
-                    });
-                    
-                    response = await this.provider.chatCompletion(params);
-                    
-                    if(!response) {
-                        throw new Error('No response received');
-                    }
-                    logInfo('Chat completion successful', { 
-                        model: params.model,
-                        attempts: attempts + 1
-                    });
-                    return response;
-
-                } catch (error) {
-                    attempts++;
-                    logError('Error in chat completion attempt', error as Error, {
-                        attempt: attempts,
-                        remainingRetries: maxRetries - attempts
-                    });
-                    
-                    if (attempts > maxRetries) throw error;
-                    
-                    // Random delay between 1000-2000ms (1-2 seconds)
-                    logDebug('Waiting before next attempt', { 
-                        delayMs: Math.round(1000),
-                        attempt: attempts + 1
-                    });
-                    await delay(1000);
-                }
-            }
-            
-            return response;
+            return await this.retryWithBackoff(
+                () => this.provider.chatCompletion(params),
+                params
+            );
         } catch (error) {
             logInfo('All chat completion attempts failed, trying fallback');
             
@@ -95,17 +125,15 @@ export class LLMGateway {
             }
 
             try {
-                // Convert parameters based on provider type
                 const convertedParams = this.convertParamsForProvider(params);
                 convertedParams.model = this.config.fallbacks.fallbackModel;
                 
-                const fallbackResponse = await this.fallbackProvider.chatCompletion(convertedParams);
-                logInfo('Fallback request successful', { 
-                    fallbackModel: convertedParams.model 
-                });
-                return fallbackResponse;
+                return await this.retryWithBackoff(
+                    () => this.fallbackProvider.chatCompletion(convertedParams),
+                    convertedParams
+                );
             } catch (fallbackError) {
-                logError('Fallback request failed', fallbackError as Error);
+                logError('Fallback provider also failed', fallbackError as Error);
                 throw fallbackError;
             }
         }

@@ -1,8 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { MessageCreateParamsNonStreaming } from '@anthropic-ai/sdk/resources';
-import { Message, MessageCreateParamsBase, MessageParam, Tool, ToolChoice, ToolUseBlock } from '@anthropic-ai/sdk/resources/messages';
-import { EnumLLMProvider } from '../../enums';
-import { IAnthropicChatCompletion, IChatCompletionParams, ILLGatewayParams, ILLMProvider } from '../../types';
+import { ContentBlock, Message, MessageCreateParamsBase, MessageParam, TextBlock, Tool, ToolChoice, ToolUseBlock } from '@anthropic-ai/sdk/resources/messages';
+import { EnumLLMProvider, IAnthropicChatCompletion, IChatCompletionParams, ILLGatewayParams, ILLMProvider } from '../../types';
 
 export class AnthropicGateway implements ILLMProvider {
     name: EnumLLMProvider = EnumLLMProvider.ANTHROPIC;
@@ -29,11 +28,18 @@ export class AnthropicGateway implements ILLMProvider {
         const response:IAnthropicChatCompletion = await this.anthropic.messages.create({...inputParams, ...{stream:false}});
         if (response.stop_reason === 'tool_use') {
             const toolUseBlock = response.content[response.content.length - 1] as ToolUseBlock;
-            response.llmGatewayOutput = {
+            response.llmGatewayOutput = [{
                 type: 'tool_calls',
                 tool_name: toolUseBlock.name,
                 arguments: toolUseBlock.input,
-            };
+            }];
+        } else {
+            response.llmGatewayOutput = response.content.map((message: TextBlock | ToolUseBlock) => {
+                return {
+                    type: 'text',
+                    content: (message as TextBlock).text,
+                }
+            });
         }
         return response;
     }

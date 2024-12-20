@@ -7,7 +7,7 @@ It simplifies integrations with multiple providers, offering fallbacks, caching,
 
 
 - **Minimize Downtime**: Automatic retries and fallbacks to secondary providers like Azure or Entropic.  
-- **Automatic input params convertion**: Automatically convert input params between OpenAI, Anthropic and Azure formats for fallbacks.
+- **Automatic input params conversion**: Automatically convert input params between OpenAI, Anthropic and Azure formats for fallbacks.
 - **Faster Responses**: Direct client-side requests for low latency.  
 - **Unified Control**: A single interface to manage requests across LLMs. 
 - **Unified Output**: Consistent output format across LLMs. 
